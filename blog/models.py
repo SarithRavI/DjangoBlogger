@@ -2,7 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super(PublishedManager,self).get_queryset().filter(status='published')
+
 class Post(models.Model):
+    # objects is the default manager.
+    objects = models.Manager()
+    # published is the custom manager added to retrieve queryset filtered by status = 'published' filter.
+    published = PublishedManager()
 
     STATUS_CHOICES = (
         ('draft','Draft'),
@@ -30,3 +39,9 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
+
+
+
+
+
+
