@@ -8,3 +8,12 @@ def list_view(request):
                  'blog/post/list.html',  # path to template from the template root
                  {'posts':posts} # context
                  )  
+
+def detail_view(request,year,month,day,post):
+    post = get_object_or_404(Post,slug=post,
+                            status='published',
+                            publish__year = year,
+                            publish__month = month,
+                            publish__day = day)
+    return render(request,'blog/post/detail.html',
+                 {'post':post})
