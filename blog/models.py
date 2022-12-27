@@ -9,8 +9,9 @@ class Post(models.Model):
         ('published','Published')
         )
 
-    title = models.CharField()
-    slug = models.SlugField()
+    title = models.CharField(max_length=250)
+    slug = models.SlugField(max_length=250,
+                            unique_for_date='publish')
     author = models.ForeignKey(to=User,
                                on_delete=models.CASCADE,
                                related_name='blog_posts')
@@ -25,7 +26,7 @@ class Post(models.Model):
                              default='draft')
     
     class Meta:
-        ordering = ('-publish')
+        ordering = ('-publish',)
     
     def __str__(self):
         return self.title
