@@ -65,6 +65,12 @@ class Comment(models.Model):
     active = models.CharField(max_length=100,
                              choices = ACTIVITY_CHOICES,
                              default = 'active')
+    
+    class Meta:
+        ordering = ('publish',)
+    
+    def __str__(self):
+        return f"Commet for post {self.post.pk} by {self.name}"
 
 
 
