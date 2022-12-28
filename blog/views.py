@@ -18,16 +18,17 @@ def detail_view(request,year,month,day,post):
                             publish__day = day)
     # get all the comments. 
     # here we utilize the related_name defined in the Comment model to Post foreign key.                        
-    comments = post.comments.filter(active='active')
+    comments = post.comments.filter(active=True)
     new_comment = None
     if request.method == 'POST':
-        form = FormComment(request.post)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
+        comment_form = FormComment(data = request.POST)
+        if comment_form.is_valid():
+            # create a new instance
+            new_comment = comment_form.save(commit=False)
             new_comment.post = post
             new_comment.save()
     else:
-        form = FormComment()
+        comment_form = FormComment()
 
     # return render(request,'blog/post/detail.html',
     #              {'post':post})
@@ -35,5 +36,5 @@ def detail_view(request,year,month,day,post):
     return render(request,'blog/post/detail.html',
                  {'post':post,
                  'comments':comments,
-                 'comment_form':form,
+                 'comment_form':comment_form,
                  'new_comment':new_comment})

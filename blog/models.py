@@ -51,9 +51,6 @@ class Post(models.Model):
 
 class Comment(models.Model):
 
-    ACTIVITY_CHOICES = (('active','Activate'),
-                        ('deactive','Deactivate'))
-
     post = models.ForeignKey(to = Post,
                              on_delete=models.CASCADE,
                              related_name= 'comments')
@@ -62,9 +59,7 @@ class Comment(models.Model):
     text = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
-    active = models.CharField(max_length=100,
-                             choices = ACTIVITY_CHOICES,
-                             default = 'active')
+    active = models.BooleanField(default=True)
     
     class Meta:
         ordering = ('publish',)
