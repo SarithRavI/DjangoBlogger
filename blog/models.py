@@ -49,8 +49,22 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+class Comment(models.Model):
 
+    ACTIVITY_CHOICES = (('active','Activate'),
+                        ('deactive','Deactivate'))
 
+    post = models.ForeignKey(to = Post,
+                             on_delete=models.CASCADE,
+                             related_name= 'comments')
+    name = models.CharField(max_length=100) 
+    email = models.EmailField()
+    text = models.TextField()
+    publish = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
+    active = models.CharField(max_length=100,
+                             choices = ACTIVITY_CHOICES,
+                             default = 'active')
 
 
 
