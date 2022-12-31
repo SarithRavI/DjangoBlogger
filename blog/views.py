@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage,\
                                   PageNotAnInteger
+from django.db.models import Count 
 from .models import Post
 from taggit.models import Tag
 from .forms import FormComment
@@ -39,6 +40,8 @@ def detail_view(request,year,month,day,post):
                             publish__year = year,
                             publish__month = month,
                             publish__day = day)
+    tags = post.tags.all()
+    similar_posts = Post.published.filter(tags__in = tags).exclude(id=post.id).distinct()
     # get all the comments. 
     # here we utilize the related_name defined in the Comment model to Post foreign key.                        
     comments = post.comments.filter(active=True)
@@ -60,4 +63,5 @@ def detail_view(request,year,month,day,post):
                  {'post':post,
                  'comments':comments,
                  'comment_form':comment_form,
-                 'new_comment':new_comment})
+                 'new_comment':new_comment,
+                 'similar_posts':similar_posts})
