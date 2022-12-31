@@ -1,14 +1,37 @@
 from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage,\
+                                  PageNotAnInteger
 from .models import Post
+from taggit.models import Tag
 from .forms import FormComment
 
-def list_view(request):
-    posts = Post.published.all()
-    return render(request,   # request object
-                 'blog/post/list.html',  # path to template from the template root
-                 {'posts':posts} # context
-                 )  
+
+def list_view(request,tag_slug = None):
+    object_list = Post.published.all()
+    tag = None
+
+    if tag_slug:
+        tag = get_object_or_404(Tag,slug=tag_slug)
+        # if we  use filter tags = tag 
+        # we implicity say tag object has multiple tags inside.
+        object_list = object_list.filter(tags__in = [tag])
+    
+    paginator = Paginator(object_list, 3) # 3 posts in each page
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        posts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range deliver last page of results
+        posts = paginator.page(paginator.num_pages)
+    return render(request,
+                 'blog/post/list.html',
+                 {'page': page,
+                  'posts': posts,
+                  'tag': tag})
 
 def detail_view(request,year,month,day,post):
     post = get_object_or_404(Post,slug=post,
