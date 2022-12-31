@@ -35,7 +35,7 @@ def list_view(request,tag_slug = None):
                   'tag': tag})
 
 def detail_view(request,year,month,day,post):
-    limit = request.GET.get('limit',None)
+    limit = int(request.GET.get('limit',None))
     post = get_object_or_404(Post,slug=post,
                             status='published',
                             publish__year = year,
@@ -44,7 +44,7 @@ def detail_view(request,year,month,day,post):
     tags = post.tags.all()
     similar_posts = Post.published.filter(tags__in = tags).exclude(id=post.id).distinct()
     similar_posts = similar_posts.annotate(same_tags = Count('tags')).order_by('-same_tags','-publish')
-    if limit:
+    if limit and limit < len(list(similar_posts)):
         similar_posts = similar_posts[:limit]
     # get all the comments. 
     # here we utilize the related_name defined in the Comment model to Post foreign key.                        
